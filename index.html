@@ -4,60 +4,41 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Audio Player</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #e0f7fa;
-      text-align: center;
-      padding: 2rem;
-    }
-    input[type="file"] {
-      margin: 1rem;
-    }
-    audio {
-      width: 100%;
-      max-width: 500px;
-      margin-top: 1rem;
-    }
-    .info {
-      color: #333;
-      font-size: 1rem;
-      margin-top: 0.5rem;
-    }
-    .error {
-      color: red;
-      margin-top: 1rem;
-    }
-  </style>
 </head>
-<body>
-  <h1>Audio Player</h1>
-  <p class="info">
-    This is an audio player – video files are not allowed.<br>
-    <strong>Supported file types:</strong> MP3, WAV, OGG, FLAC, AAC, M4A, WebM, AIF, AIFF and more.
-  </p>
-  <input type="file" id="audioFile" accept=".mp3,.wav,.ogg,.flac,.aac,.m4a,.webm,.aif,.aiff,audio/*" />
-  <audio id="audioPlayer" controls></audio>
-  <p id="message" class="error"></p>
+<body style="text-align:center; font-family:sans-serif; padding:2rem;">
+
+  <select id="languageSelect">
+    <option value="en">English</option>
+    <option value="fi">Suomi</option>
+  </select>
+
+  <h1 id="title">Audio Player</h1>
+  <input type="file" id="audioFile" accept="audio/*" />
+  <br><br>
+  <audio id="audioPlayer" controls style="width:100%; max-width:400px;"></audio>
 
   <script>
     const fileInput = document.getElementById("audioFile");
     const audioPlayer = document.getElementById("audioPlayer");
-    const message = document.getElementById("message");
+    const title = document.getElementById("title");
+    const langSelect = document.getElementById("languageSelect");
 
     fileInput.addEventListener("change", function () {
       const file = this.files[0];
-      message.textContent = "";
-
       if (file && file.type.startsWith("audio/")) {
-        const audioURL = URL.createObjectURL(file);
-        audioPlayer.src = audioURL;
-        audioPlayer.style.display = "block";
+        const url = URL.createObjectURL(file);
+        audioPlayer.src = url;
         audioPlayer.play();
       } else {
         audioPlayer.src = "";
-        audioPlayer.style.display = "none";
-        message.textContent = "Error: Only audio files are supported!";
+      }
+    });
+
+    langSelect.addEventListener("change", function () {
+      if (this.value === "fi") {
+        title.textContent = "Äänisoitin";
+      } else {
+        title.textContent = "Audio Player";
       }
     });
   </script>
