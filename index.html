@@ -2,45 +2,166 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Audio Player</title>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --text: #222;
+      --border: #90caf9;
+      --hover: #e3f2fd;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #eee;
+      --border: #555;
+      --hover: #1e1e1e;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
+      position: relative;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    #dropZone {
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      background-color: var(--hover);
+      cursor: pointer;
+      transition: background 0.3s;
+      user-select: none;
+    }
+
+    #dropZone.dragover {
+      background-color: var(--border);
+    }
+
+    audio {
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    #volumeControl {
+      margin-top: 1rem;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #volumeControl input[type="range"] {
+      flex: 1;
+    }
+
+    #themeToggle {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: var(--text);
+      transition: transform 0.2s;
+      user-select: none;
+    }
+
+    #themeToggle:hover {
+      transform: scale(1.1);
+    }
+  </style>
 </head>
-<body style="text-align:center; font-family:sans-serif; padding:2rem;">
+<body>
 
-  <select id="languageSelect">
-    <option value="en">English</option>
-    <option value="fi">Suomi</option>
-  </select>
+  <button id="themeToggle" title="Toggle theme">🌙</button>
+  <h1>Audio Player</h1>
 
-  <h1 id="title">Audio Player</h1>
-  <input type="file" id="audioFile" accept="audio/*" />
-  <br><br>
-  <audio id="audioPlayer" controls style="width:100%; max-width:400px;"></audio>
+  <div id="dropZone">Click or drag audio file here</div>
+  <audio id="audioPlayer" controls style="display: none;"></audio>
+
+  <div id="volumeControl" style="display: none;">
+    <label for="volumeSlider">Volume</label>
+    <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1" />
+  </div>
+
+  <input type="file" id="fileInput" accept="audio/*" style="display:none" />
 
   <script>
-    const fileInput = document.getElementById("audioFile");
-    const audioPlayer = document.getElementById("audioPlayer");
-    const title = document.getElementById("title");
-    const langSelect = document.getElementById("languageSelect");
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    const volumeSlider = document.getElementById('volumeSlider');
+    const volumeControl = document.getElementById('volumeControl');
 
-    fileInput.addEventListener("change", function () {
-      const file = this.files[0];
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    if (!isTouchDevice) {
+      dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+      });
+
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        const file = e.dataTransfer.files[0];
+        handleAudioFile(file);
+      });
+    }
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      handleAudioFile(file);
+    });
+
+    function handleAudioFile(file) {
       if (file && file.type.startsWith("audio/")) {
         const url = URL.createObjectURL(file);
         audioPlayer.src = url;
+        audioPlayer.style.display = "block";
+        volumeControl.style.display = "flex";
         audioPlayer.play();
-      } else {
-        audioPlayer.src = "";
       }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      body.classList.toggle('dark');
+      themeToggle.textContent = body.classList.contains('dark') ? '☀️' : '🌙';
     });
 
-    langSelect.addEventListener("change", function () {
-      if (this.value === "fi") {
-        title.textContent = "Äänisoitin";
-      } else {
-        title.textContent = "Audio Player";
-      }
+    volumeSlider.addEventListener('input', () => {
+      audioPlayer.volume = volumeSlider.value;
     });
   </script>
+
 </body>
 </html>
