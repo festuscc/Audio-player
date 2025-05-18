@@ -23,19 +23,21 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
       margin: 0;
       transition: background 0.3s, color 0.3s;
       position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* kaikki ylös */
+      padding-top: 40px; /* vähän tilaa ylhäällä */
     }
 
     h1 {
       font-size: 2rem;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
+      user-select: none;
     }
 
     #dropZone {
@@ -75,16 +77,17 @@
     }
 
     #themeToggle {
-      position: absolute;
-      bottom: 20px;
+      position: fixed;
+      top: 10px; /* ylempänä */
       left: 20px;
       background: none;
       border: none;
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       cursor: pointer;
       color: var(--text);
       transition: transform 0.2s;
       user-select: none;
+      z-index: 1000;
     }
 
     #themeToggle:hover {
